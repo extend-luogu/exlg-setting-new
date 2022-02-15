@@ -39,7 +39,7 @@
 
         #logo {
             display: inline-block;
-            width: calc( 100% - 31px);
+            width: calc(100% - 31px);
             font-size: 20px;
             font-weight: 400;
             padding: 30px 10px 15px 30px;
@@ -79,7 +79,7 @@
             opacity: 0;
             display: none;
             width: 50%;
-            height: calc( 100% - 68px);
+            height: calc(100% - 68px);
             background: #fdfdfd;
         }
 
@@ -109,8 +109,6 @@
         }
 
         #mss {
-            overflow-y: scroll;
-            overflow-x: hidden;
             padding-right: 0;
             margin-right: 10px;
             width: calc(66.6667% - 80px);
@@ -318,7 +316,7 @@
         function clickModule(mt, i) {
             openModule = Number(i)
             $("#mss").css("opacity", "0");
-            $("#mss").css("width", "calc( 66.66% - 80px)");
+            $("#mss").css("width", "calc(66.66% - 80px)");
             $("#mss").css("display", "block");
             setTimeout(function() {
                 $('.l3').html("");
@@ -350,7 +348,7 @@
         function refresh(mt, i) {
             openModule = Number(i)
             modules[mt].children[i] = getDataJson(getModule(modules[mt].children[i].name))
-            $("#mss").css("width", "calc( 66.66% - 80px)");
+            $("#mss").css("width", "calc(66.66% - 80px)");
             $("#mss").css("display", "block");
             $('.l3').html("");
             for (var is = 0; is < modules[mt].children[i].settings.length; is++) {
