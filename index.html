@@ -56,7 +56,7 @@
         }
 
         #ms {
-            height: calc( 100% - 68px);
+            height: 100%;
             transition: all 0.3s;
             display: none;
             opacity: 0;
@@ -242,7 +242,7 @@
         function mssChange(a, mt, i, is) {
             mod = modules[mt].children[i];
             sto[mod.rawName][mod.settings[is].name] = String(a);
-            mod.Setting[is].Val = a;
+            mod.settings[is].Val = a;
             refresh(mt, i)
         }
         function mssBChange(a, mt, i, is) {
