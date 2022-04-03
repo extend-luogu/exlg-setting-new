@@ -254,11 +254,9 @@
         }
         function mssIChange(a, mt, i, is) {
             mod = modules[mt].children[i];
-            var value;
+            var value = a.value;
             if (mod.settings[is].increment == 1) {
-                value = new Integer(a.value)
-            } else {
-                value = new Float(a.value)
+                value = ~~value
             }
             sto[mod.rawName][mod.settings[is].name] = value;
             mod.settings[is].Val = a.value;
