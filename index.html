@@ -187,6 +187,8 @@
                             [set.displayName, set.description[1]] = [set.description[1], set.displayName];
                         }
                         set.Val = sto[mod.rawName][set.name];
+                        if (set.type === "SELECTBOX" && window.exlg.mod.data[mod.rawName].lvs[set.name]?.get === "id")
+                            set.Val = set.acceptableValues[set.Val]
                     })
                 })
             })
