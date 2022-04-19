@@ -186,9 +186,21 @@
                         if (lang === "zh" && set.description !== undefined) {
                             [set.displayName, set.description[1]] = [set.description[1], set.displayName];
                         }
-                        set.Val = sto[mod.rawName][set.name];
-                        if (set.type === "SELECTBOX" && (window.exlg.datas ?? window.exlg.mod.data)[mod.rawName].lvs[set.name]?.get === "id")
-                            set.Val = set.acceptableValues[set.Val]
+                        let msto = sto[mod.rawName], nm = set.name;
+                        if (Array.isArray(set.name)) {
+                            set.name.slice(0, -1).forEach(e => msto = msto[e]);
+                            nm = set.name.lastElem();
+                        }
+                        set.Val = msto[nm];
+                        if (set.type === "SELECTBOX") {
+                            let datRoot = (window.exlg.datas ?? window.exlg.mod.data)[mod.rawName].lvs, nm = set.name;
+                            if (Array.isArray(set.name)) {
+                                nm = set.name.lastElem();
+                                set.name.slice(0, -1).forEach(e => datRoot = datRoot[e].lvs);
+                            }
+                            if (datRoot[nm]?.get === "id")
+                                set.Val = set.acceptableValues[set.Val];
+                        }
                     })
                 })
             })
@@ -240,15 +252,23 @@
                 $('#M-' + modules[mt].name + "-" + mod.Name + ' div input').attr("checked", "true");
             }
         }
+        function opSettings(root, pth, val) {
+            if (typeof pth === "string") {
+                root[pth] = val;
+            } else {
+                pth.slice(0, -1).forEach(e => root = root[e]);
+                root[pth.lastElem()] = val;
+            }
+        }
         function mssChange(a, mt, i, is) {
             mod = modules[mt].children[i];
-            sto[mod.rawName][mod.settings[is].name] = String(a);
+            opSettings(sto[mod.rawName], mod.settings[is].name, String(a));
             mod.settings[is].Val = a;
             refresh(mt, i)
         }
         function mssBChange(a, mt, i, is) {
             mod = modules[mt].children[i];
-            sto[mod.rawName][mod.settings[is].name] = Boolean(a.checked);
+            opSettings(sto[mod.rawName], mod.settings[is].name, Boolean(a.checked));
             mod.settings[is].Val = a.checked;
             refresh(mt, i)
         }
@@ -258,13 +278,13 @@
             if (mod.settings[is].increment == 1) {
                 value = ~~value
             }
-            sto[mod.rawName][mod.settings[is].name] = value;
+            opSettings(sto[mod.rawName], mod.settings[is].name, value);
             mod.settings[is].Val = a.value;
             refresh(mt, i)
         }
         function mssTChange(value, mt, i, is) {
             mod = modules[mt].children[i];
-            sto[mod.rawName][mod.settings[is].name] = String(value);
+            opSettings(sto[mod.rawName], mod.settings[is].name, String(value));
             mod.settings[is].Val = value;
         }
         // 当模块Category被点击
