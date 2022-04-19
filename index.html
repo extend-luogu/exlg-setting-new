@@ -183,8 +183,9 @@
                     }
                     mod.enable = sto[mod.rawName].on;
                     mod.settings.forEach(function(set) {
-                        if (lang === "zh" && set.description !== undefined) {
-                            [set.displayName, set.description[1]] = [set.description[1], set.displayName];
+                        if (set.description) {
+                            let langId = ["en", "zh"].indexOf(lang);
+                            [set.displayName, set.description[langId]] = [set.description[langId], set.displayName];
                         }
                         let msto = sto[mod.rawName], nm = set.name;
                         if (Array.isArray(set.name)) {
