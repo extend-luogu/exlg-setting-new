@@ -275,10 +275,7 @@
         }
         function mssIChange(a, mt, i, is) {
             mod = modules[mt].children[i];
-            var value = a.value;
-            if (mod.settings[is].increment == 1) {
-                value = ~~value
-            }
+            var value = ~~a.value; // 浮点数去死吧
             opSettings(sto[mod.rawName], mod.settings[is].name, value);
             mod.settings[is].Val = a.value;
             refresh(mt, i)
