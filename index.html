@@ -190,13 +190,13 @@
                         let msto = sto[mod.rawName], nm = set.name;
                         if (Array.isArray(set.name)) {
                             set.name.slice(0, -1).forEach(e => msto = msto[e]);
-                            nm = set.name.lastElem();
+                            nm = set.name.at(-1);
                         }
                         set.Val = msto[nm];
                         if (set.type === "SELECTBOX") {
                             let datRoot = (window.exlg.datas ?? window.exlg.mod.data)[mod.rawName].lvs, nm = set.name;
                             if (Array.isArray(set.name)) {
-                                nm = set.name.lastElem();
+                                nm = set.name.at(-1);
                                 set.name.slice(0, -1).forEach(e => datRoot = datRoot[e].lvs);
                             }
                             if (datRoot[nm]?.get === "id")
@@ -258,7 +258,7 @@
                 root[pth] = val;
             } else {
                 pth.slice(0, -1).forEach(e => root = root[e]);
-                root[pth.lastElem()] = val;
+                root[pth.at(-1)] = val;
             }
         }
         function mssChange(a, mt, i, is) {
