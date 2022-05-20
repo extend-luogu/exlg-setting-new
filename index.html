@@ -150,263 +150,262 @@
     </div>
 </div>
 <script>
-        var openCategory = -1;
-        var openModule = -1;
-        
-        const extensible = '<i class="mdui-list-item-icon mdui-icon material-icons extensible-icon">more_horiz</i>';
+	var openCategory = -1;
+	var openModule = -1;
+	
+	const extensible = '<i class="mdui-list-item-icon mdui-icon material-icons extensible-icon">more_horiz</i>';
 
-        var modules = [];
+	function startOPED(sss, a) {
+		$("#mss").css("background", "rgba(0,0,0,0)");
+		setTimeout(function() {
+			$(sss).css("margin-right", "-50px");
+			$(sss).css("opacity", "0");
+			$(sss).css("heidth", "0");
+			setTimeout(function() {
+				$(sss).css("display", "none");
+			}, 290);
+		}, ((a + 1) * 100) - ((a / 4) * 100) * Math.abs((a / 10) - 1));
+	}
 
-        function startOPED(sss, a) {
-            $("#mss").css("background", "rgba(0,0,0,0)");
-            setTimeout(function() {
-                $(sss).css("margin-right", "-50px");
-                $(sss).css("opacity", "0");
-                $(sss).css("heidth", "0");
-                setTimeout(function() {
-                    $(sss).css("display", "none");
-                }, 290);
-            }, ((a + 1) * 100) - ((a / 4) * 100) * Math.abs((a / 10) - 1));
-        }
+	function guiStart(modules) {
+		window.modules = modules;
+		sto = window.exlg.sto ?? window.exlg.TM_dat.sto;
+		console.log(sto)
+		const lang = sto["@dash-board"].lang;
+		modules.forEach(function(cate) {
+			if (lang === "zh") {
+				[cate.name, cate.description] = [cate.description, cate.name];
+			}
+			cate.children.forEach(function(mod) {
+				if (lang === "zh") {
+					[mod.name, mod.description] = [mod.description, mod.name];
+				}
+				mod.enable = sto[mod.rawName].on;
+				mod.settings.forEach(function(set) {
+					if (set.description) {
+						let langId = ["en", "zh"].indexOf(lang);
+						[set.displayName, set.description[langId]] = [set.description[langId], set.displayName];
+					}
+					let msto = sto[mod.rawName], nm = set.name;
+					if (Array.isArray(set.name)) {
+						set.name.slice(0, -1).forEach(e => msto = msto[e]);
+						nm = set.name.at(-1);
+					}
+					set.Val = msto[nm];
+					if (set.type === "SELECTBOX") {
+						let datRoot = (window.exlg.scm ?? window.exlg.mod.data)[mod.rawName].lvs, nm = set.name;
+						if (Array.isArray(set.name)) {
+							nm = set.name.at(-1);
+							set.name.slice(0, -1).forEach(e => datRoot = datRoot[e].lvs);
+						}
+						if (datRoot[nm]?.get === "id")
+							set.Val = set.acceptableValues[set.Val];
+					}
+				})
+			})
+		})
+		$(".l1").mousedown(function(e) {
+			if (3 == e.which) {
+				openCategory = -1
+				openModule = -1
+				$("#mts .mdui-list-item-content").css("transform", "scale(1)");
+				setTimeout(function() {
+					$("#mts .mdui-list-item-content").css("display", "inline");
+				}, 200);
+				$("#mts .mdui-list-item-content").css("font-size", "16px");
+				$("#mts").css("width", "");
+				$("#ms").css("opacity", "0");
+				$("#ms").css("overflow-y", "none");
+				$("#ms").css("width", "0");
+				setTimeout(function() {
+					$("#ms").css("display", "none");
+				}, 230);
+				$(".lla").each(function(a) {
+					startOPED(this, a);
+				});
+			}
+		});
+		for (var i = 0; i < modules.length; i++) {
+			$('.l1').append('<li class="mdui-list-item mdui-ripple" MTtype="' + i + '" onclick="clickModuleT(-1,this)"><i class="mdui-list-item-icon mdui-icon material-icons">' + modules[i].icon + '</i><div class="mdui-list-item-content">' + modules[i].name + '</div></li>');
+		}
+		//渐显
+		setTimeout(function() {
+			$(".card").css("opacity", "1");
+		}, 100);
+		setTimeout(function() {
+			$(".card").css("transform", "scale(1)");
+		}, 100);
+	}
 
-        function guiStart(a) {
-            modules = a;
-            sto = window.exlg.TM_dat.sto;
-            const lang = sto["@dash-board"].lang;
-            modules.forEach(function(cate) {
-                if (lang === "zh") {
-                    [cate.name, cate.description] = [cate.description, cate.name];
-                }
-                cate.children.forEach(function(mod) {
-                    if (lang === "zh") {
-                        [mod.name, mod.description] = [mod.description, mod.name];
-                    }
-                    mod.enable = sto[mod.rawName].on;
-                    mod.settings.forEach(function(set) {
-                        if (set.description) {
-                            let langId = ["en", "zh"].indexOf(lang);
-                            [set.displayName, set.description[langId]] = [set.description[langId], set.displayName];
-                        }
-                        let msto = sto[mod.rawName], nm = set.name;
-                        if (Array.isArray(set.name)) {
-                            set.name.slice(0, -1).forEach(e => msto = msto[e]);
-                            nm = set.name.at(-1);
-                        }
-                        set.Val = msto[nm];
-                        if (set.type === "SELECTBOX") {
-                            let datRoot = (window.exlg.datas ?? window.exlg.mod.data)[mod.rawName].lvs, nm = set.name;
-                            if (Array.isArray(set.name)) {
-                                nm = set.name.at(-1);
-                                set.name.slice(0, -1).forEach(e => datRoot = datRoot[e].lvs);
-                            }
-                            if (datRoot[nm]?.get === "id")
-                                set.Val = set.acceptableValues[set.Val];
-                        }
-                    })
-                })
-            })
-            $(".l1").mousedown(function(e) {
-                if (3 == e.which) {
-                    openCategory = -1
-                    openModule = -1
-                    $("#mts .mdui-list-item-content").css("transform", "scale(1)");
-                    setTimeout(function() {
-                        $("#mts .mdui-list-item-content").css("display", "inline");
-                    }, 200);
-                    $("#mts .mdui-list-item-content").css("font-size", "16px");
-                    $("#mts").css("width", "");
-                    $("#ms").css("opacity", "0");
-                    $("#ms").css("overflow-y", "none");
-                    $("#ms").css("width", "0");
-                    setTimeout(function() {
-                        $("#ms").css("display", "none");
-                    }, 230);
-                    $(".lla").each(function(a) {
-                        startOPED(this, a);
-                    });
-                }
-            });
-            for (var i = 0; i < modules.length; i++) {
-                $('.l1').append('<li class="mdui-list-item mdui-ripple" MTtype="' + i + '" onclick="clickModuleT(-1,this)"><i class="mdui-list-item-icon mdui-icon material-icons">' + modules[i].icon + '</i><div class="mdui-list-item-content">' + modules[i].name + '</div></li>');
-            }
-            //渐显
-            setTimeout(function() {
-                $(".card").css("opacity", "1");
-            }, 100);
-            setTimeout(function() {
-                $(".card").css("transform", "scale(1)");
-            }, 100);
-        }
+	// guiStart(modules);
 
-        // guiStart(modules);
-
-        function add(a) {
-            $(document.body).append('<script>' + a + "<\/script>");
-        }
-        function rc(mt, i) {
-            mod = modules[mt].children[i];
-            if (mod.rawName[0] === '@' || mod.unclosable) return;
-            sto[mod.rawName].on = mod.enable = !mod.enable;
-            if (mod.enable) {
-                $('#M-' + modules[mt].name + "-" + mod.Name + ' div input').removeAttr("checked");
-            } else {
-                $('#M-' + modules[mt].name + "-" + mod.Name + ' div input').attr("checked", "true");
-            }
-        }
-        function opSettings(root, pth, val) {
-            if (typeof pth === "string") {
-                root[pth] = val;
-            } else {
-                pth.slice(0, -1).forEach(e => root = root[e]);
-                root[pth.at(-1)] = val;
-            }
-        }
-        function mssChange(a, mt, i, is) {
-            mod = modules[mt].children[i];
-            opSettings(sto[mod.rawName], mod.settings[is].name, String(a));
-            mod.settings[is].Val = a;
-            refresh(mt, i)
-        }
-        function mssBChange(a, mt, i, is) {
-            mod = modules[mt].children[i];
-            opSettings(sto[mod.rawName], mod.settings[is].name, Boolean(a.checked));
-            mod.settings[is].Val = a.checked;
-            refresh(mt, i)
-        }
-        function mssIChange(a, mt, i, is) {
-            mod = modules[mt].children[i];
-            var value = ~~a.value; // 浮点数去死吧
-            opSettings(sto[mod.rawName], mod.settings[is].name, value);
-            mod.settings[is].Val = a.value;
-            refresh(mt, i)
-        }
-        function mssTChange(value, mt, i, is) {
-            mod = modules[mt].children[i];
-            opSettings(sto[mod.rawName], mod.settings[is].name, String(value));
-            mod.settings[is].Val = value;
-        }
-        // 当模块Category被点击
-        function clickModuleT(mt, a) {
-            if (mt == -1 && a != undefined) {
-                mt = $(a).attr("MTtype")
-            }
-            openCategory = Number(mt)
-            $("#ms").css("opacity", "0");
-            const loadspeed = ("load_speed" in window.exlg.TM_dat.sto["@dash-board"]) ? window.exlg.TM_dat.sto["@dash-board"].load_speed : 10;
-            setTimeout(function() {
-                $('.l2').html("");
-                for (var i = 0; i < modules[mt].children.length; i++) {
-                    const mod = modules[mt].children[i];
-                    if (mod.Hide || mod.Hide == null) {
-                        const isE = mod.enable ? "checked" : "";
-                        const isC = (mod.rawName[0] === '@' || mod.unclosable) ? "disabled" : "";
-                        const isEx = mod.settings.length > 0 ? extensible : "";
-                        $('.l2').append('<label id="M-' + modules[mt].name + "-" + mod.name + '" class="lss mdui-list-item mdui-ripple" Mname="' + mod.name + '" Mtype="' + modules[mt].name + '"><div class="mdui-list-item-content">' + mod.name.replace(/_/g," ") + '</div>' + isEx + '<div class="mdui-checkbox"><input type="checkbox" ' + isE + " " + isC + '/><i class="mdui-checkbox-icon"></i></div></label>');
-                        add('setTimeout(function(){$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].children[' + i + '].name).css("opacity","1");$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].children[' + i + '].name).css("margin-right","0");},' + ((i + 1) * 10 * loadspeed) + ');$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].children[' + i + '].name).mouseenter(function(){mouseEventHandle(' + mt + ',' + i + ',true);}).mouseleave(function(){mouseEventHandle(' + mt + ',' + i + ',false);}).mousedown(function(e){if(3 == e.which){clickModule(' + mt + ',' + i + ');}else if(1 == e.which){rc(' + mt + ',' + i + ');}});');
-                    }
-                }
-                $("#ms").css("width", "");
-                $("#mss").css("background", "#fdfdfd");
-                $("#ms").css("overflow-y", "scroll");
-                $("#mts .mdui-list-item-content").css("transform", "scale(0)");
-                $("#mts .mdui-list-item-content").css("font-size", "10");
-                setTimeout(function() {
-                    $("#mts .mdui-list-item-content").css("display", "none");
-                }, 100);
-                $("#mts").css("width", "70px");
-                $("#ms").css("display", "block");
-                setTimeout(function() {
-                    $("#ms").css("opacity", "1");
-                }, 23 * loadspeed);
-            }, 25 * loadspeed);
-        }
-        var overCount = 0
-        function mouseEventHandle(mt, i, isOver) {
-            if (isOver) {
-                overCount++
-            } else {
-                overCount--
-            }
-            if (overCount == 0) {
-                $("#description").html("")
-            } else {
-                $("#description").html(modules[mt].children[i].description)
-            }
-        }
-        function clickModule(mt, i) {
-            openModule = Number(i)
-            $("#mss").css("opacity", "0");
-            $("#mss").css("width", "calc(66.66% - 80px)");
-            $("#mss").css("display", "block");
-            setTimeout(function() {
-                $('.l3').html("");
-                for (var is = 0; is < modules[mt].children[i].settings.length; is++) {
-                    if (modules[mt].children[i].settings[is].type == "SELECTBOX") {
-                        var ops = '<option value="1">' + modules[mt].children[i].settings[is].Val + '</option>';
-                        for (var aa = 0; aa < modules[mt].children[i].settings[is].acceptableValues.length; aa++) {
-                            if (modules[mt].children[i].settings[is].Val != modules[mt].children[i].settings[is].acceptableValues[aa])
-                                ops = ops + '<option value="' + (aa + 2) + '">' + modules[mt].children[i].settings[is].acceptableValues[aa] + '</option>';
-                        }
-                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><select style="float: right;margin-right: 20px;display: inline-block;" class="mdui-select" onchange="mssChange(this.options[this.options.selectedIndex].text,' + mt + ',' + i + ',' + is + ')" mdui-select="{position: \'bottom\'}">' + ops + '</select></li>');
-                    }
-                    if (modules[mt].children[i].settings[is].type == "TEXTBOX") {
-                        $('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].children[i].settings[is].Val + '" type="text" oninput="mssTChange($(this).val(),' + mt + ',' + i + ',' + is + ')"/></div></li>');
-                    }
-                    if (modules[mt].children[i].settings[is].type == "CHECKBOX") {
-                        var isE = modules[mt].children[i].settings[is].Val ? 'checked' : "";
-                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-checkbox"><input type="checkbox" onclick="mssBChange(this,' + mt + ',' + i + ',' + is + ')" ' + isE + '/><i class="mdui-checkbox-icon"></i></label></li>');
-                    }
-                    if (modules[mt].children[i].settings[is].type == "SLIDER") {
-                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-slider mdui-slider-discrete"><input id="Int-' + mt + '-' + i + '-' + is + '" type="range" step="' + modules[mt].children[i].settings[is].increment + '" min="' + modules[mt].children[i].settings[is].minValue + '" max="' + modules[mt].children[i].settings[is].maxValue + '" onchange="mssIChange(this,' + mt + ',' + i + ',' + is + ')"/></label></li>');
-                        $('#Int-' + mt + '-' + i + '-' + is)[0].value = modules[mt].children[i].settings[is].Val;
-                    }
-                    mdui.mutation();
-                }
-                $("#mss").css("opacity", "1");
-            }, 250);
-        }
-        function refresh(mt, i) {
-            openModule = Number(i)
-            modules[mt].children[i] = getDataJson(getModule(modules[mt].children[i].name))
-            $("#mss").css("width", "calc(66.66% - 80px)");
-            $("#mss").css("display", "block");
-            $('.l3').html("");
-            for (var is = 0; is < modules[mt].children[i].settings.length; is++) {
-                if (modules[mt].children[i].settings[is].isVisable()) {
-                    if (modules[mt].children[i].settings[is].type == "SELECTBOX") {
-                        var ops = '<option value="1">' + modules[mt].children[i].settings[is].Val + '</option>';
-                        for (var aa = 0; aa < modules[mt].children[i].settings[is].acceptableValues.length; aa++) {
-                            if (modules[mt].children[i].settings[is].Val != modules[mt].children[i].settings[is].acceptableValues[aa])
-                                ops = ops + '<option value="' + (aa + 2) + '">' + modules[mt].children[i].settings[is].acceptableValues[aa] + '</option>';
-                        }
-                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><select style="float: right;margin-right: 20px;display: inline-block;" class="mdui-select" onchange="mssChange(this.options[this.options.selectedIndex].text,' + mt + ',' + i + ',' + is + ')" mdui-select="{position: \'bottom\'}">' + ops + '</select></li>');
-                    }
-                    if (modules[mt].children[i].settings[is].type == "TEXTBOX") {
-                        $('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].children[i].settings[is].Val + '" type="text"/></div></li>');
-                    }
-                    if (modules[mt].children[i].settings[is].type == "CHECKBOX") {
-                        var isE = modules[mt].children[i].settings[is].Val ? 'checked' : "";
-                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-checkbox"><input type="checkbox" onclick="mssBChange(this,' + mt + ',' + i + ',' + is + ')" ' + isE + '/><i class="mdui-checkbox-icon"></i></label></li>');
-                    }
-                    if (modules[mt].children[i].settings[is].type == "SLIDER") {
-                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-slider mdui-slider-discrete"><input id="Int-' + mt + '-' + i + '-' + is + '" type="range" step="' + modules[mt].children[i].settings[is].increment + '" min="' + modules[mt].children[i].settings[is].minValue + '" max="' + modules[mt].children[i].settings[is].maxValue + '" onchange="mssIChange(this,' + mt + ',' + i + ',' + is + ')"/></label></li>');
-                        $('#Int-' + mt + '-' + i + '-' + is)[0].value = modules[mt].children[i].settings[is].Val;
-                    }
-                    mdui.mutation();
-                }
-            }
-            $("#mss").css("opacity", "1");
-        }
-        document.oncontextmenu = function(e) {
-            return false;
-        }
-        if (openCategory != -1) {
-            clickModuleT(openCategory)
-            if (openModule != -1) {
-                clickModule(openCategory, openModule)
-            }
-        }
-    </script>
+	function add(a) {
+		$(document.body).append('<script>' + a + "<\/script>");
+	}
+	function rc(mt, i) {
+		mod = modules[mt].children[i];
+		if (mod.rawName[0] === '@' || mod.unclosable) return;
+		sto[mod.rawName].on = mod.enable = !mod.enable;
+		if (mod.enable) {
+			$('#M-' + modules[mt].name + "-" + mod.Name + ' div input').removeAttr("checked");
+		} else {
+			$('#M-' + modules[mt].name + "-" + mod.Name + ' div input').attr("checked", "true");
+		}
+	}
+	function opSettings(root, pth, val) {
+		if (typeof pth === "string") {
+			root[pth] = val;
+		} else {
+			pth.slice(0, -1).forEach(e => root = root[e]);
+			root[pth.at(-1)] = val;
+		}
+	}
+	function mssChange(a, mt, i, is) {
+		mod = modules[mt].children[i];
+		opSettings(sto[mod.rawName], mod.settings[is].name, String(a));
+		mod.settings[is].Val = a;
+		refresh(mt, i)
+	}
+	function mssBChange(a, mt, i, is) {
+		mod = modules[mt].children[i];
+		opSettings(sto[mod.rawName], mod.settings[is].name, Boolean(a.checked));
+		mod.settings[is].Val = a.checked;
+		refresh(mt, i)
+	}
+	function mssIChange(a, mt, i, is) {
+		mod = modules[mt].children[i];
+		var value = ~~a.value; // 浮点数去死吧
+		opSettings(sto[mod.rawName], mod.settings[is].name, value);
+		mod.settings[is].Val = a.value;
+		refresh(mt, i)
+	}
+	function mssTChange(value, mt, i, is) {
+		mod = modules[mt].children[i];
+		opSettings(sto[mod.rawName], mod.settings[is].name, String(value));
+		mod.settings[is].Val = value;
+	}
+	// 当模块Category被点击
+	function clickModuleT(mt, a) {
+		if (mt == -1 && a != undefined) {
+			mt = $(a).attr("MTtype")
+		}
+		openCategory = Number(mt)
+		$("#ms").css("opacity", "0");
+		const loadspeed = ("load_speed" in sto["@dash-board"]) ? sto["@dash-board"].load_speed : 10;
+		setTimeout(function() {
+			$('.l2').html("");
+			for (var i = 0; i < modules[mt].children.length; i++) {
+				const mod = modules[mt].children[i];
+				if (mod.Hide || mod.Hide == null) {
+					const isE = mod.enable ? "checked" : "";
+					const isC = (mod.rawName[0] === '@' || mod.unclosable) ? "disabled" : "";
+					const isEx = mod.settings.length > 0 ? extensible : "";
+					$('.l2').append('<label id="M-' + modules[mt].name + "-" + mod.name + '" class="lss mdui-list-item mdui-ripple" Mname="' + mod.name + '" Mtype="' + modules[mt].name + '"><div class="mdui-list-item-content">' + mod.name.replace(/_/g," ") + '</div>' + isEx + '<div class="mdui-checkbox"><input type="checkbox" ' + isE + " " + isC + '/><i class="mdui-checkbox-icon"></i></div></label>');
+					add('setTimeout(function(){$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].children[' + i + '].name).css("opacity","1");$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].children[' + i + '].name).css("margin-right","0");},' + ((i + 1) * 10 * loadspeed) + ');$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].children[' + i + '].name).mouseenter(function(){mouseEventHandle(' + mt + ',' + i + ',true);}).mouseleave(function(){mouseEventHandle(' + mt + ',' + i + ',false);}).mousedown(function(e){if(3 == e.which){clickModule(' + mt + ',' + i + ');}else if(1 == e.which){rc(' + mt + ',' + i + ');}});');
+				}
+			}
+			$("#ms").css("width", "");
+			$("#mss").css("background", "#fdfdfd");
+			$("#ms").css("overflow-y", "scroll");
+			$("#mts .mdui-list-item-content").css("transform", "scale(0)");
+			$("#mts .mdui-list-item-content").css("font-size", "10");
+			setTimeout(function() {
+				$("#mts .mdui-list-item-content").css("display", "none");
+			}, 100);
+			$("#mts").css("width", "70px");
+			$("#ms").css("display", "block");
+			setTimeout(function() {
+				$("#ms").css("opacity", "1");
+			}, 23 * loadspeed);
+		}, 25 * loadspeed);
+	}
+	var overCount = 0
+	function mouseEventHandle(mt, i, isOver) {
+		if (isOver) {
+			overCount++
+		} else {
+			overCount--
+		}
+		if (overCount == 0) {
+			$("#description").html("")
+		} else {
+			$("#description").html(modules[mt].children[i].description)
+		}
+	}
+	function clickModule(mt, i) {
+		openModule = Number(i)
+		$("#mss").css("opacity", "0");
+		$("#mss").css("width", "calc(66.66% - 80px)");
+		$("#mss").css("display", "block");
+		setTimeout(function() {
+			$('.l3').html("");
+			for (var is = 0; is < modules[mt].children[i].settings.length; is++) {
+				if (modules[mt].children[i].settings[is].type == "SELECTBOX") {
+					var ops = '<option value="1">' + modules[mt].children[i].settings[is].Val + '</option>';
+					for (var aa = 0; aa < modules[mt].children[i].settings[is].acceptableValues.length; aa++) {
+						if (modules[mt].children[i].settings[is].Val != modules[mt].children[i].settings[is].acceptableValues[aa])
+							ops = ops + '<option value="' + (aa + 2) + '">' + modules[mt].children[i].settings[is].acceptableValues[aa] + '</option>';
+					}
+					$('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><select style="float: right;margin-right: 20px;display: inline-block;" class="mdui-select" onchange="mssChange(this.options[this.options.selectedIndex].text,' + mt + ',' + i + ',' + is + ')" mdui-select="{position: \'bottom\'}">' + ops + '</select></li>');
+				}
+				if (modules[mt].children[i].settings[is].type == "TEXTBOX") {
+					$('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].children[i].settings[is].Val + '" type="text" oninput="mssTChange($(this).val(),' + mt + ',' + i + ',' + is + ')"/></div></li>');
+				}
+				if (modules[mt].children[i].settings[is].type == "CHECKBOX") {
+					var isE = modules[mt].children[i].settings[is].Val ? 'checked' : "";
+					$('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-checkbox"><input type="checkbox" onclick="mssBChange(this,' + mt + ',' + i + ',' + is + ')" ' + isE + '/><i class="mdui-checkbox-icon"></i></label></li>');
+				}
+				if (modules[mt].children[i].settings[is].type == "SLIDER") {
+					$('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-slider mdui-slider-discrete"><input id="Int-' + mt + '-' + i + '-' + is + '" type="range" step="' + modules[mt].children[i].settings[is].increment + '" min="' + modules[mt].children[i].settings[is].minValue + '" max="' + modules[mt].children[i].settings[is].maxValue + '" onchange="mssIChange(this,' + mt + ',' + i + ',' + is + ')"/></label></li>');
+					$('#Int-' + mt + '-' + i + '-' + is)[0].value = modules[mt].children[i].settings[is].Val;
+				}
+				mdui.mutation();
+			}
+			$("#mss").css("opacity", "1");
+		}, 250);
+	}
+	function refresh(mt, i) {
+		openModule = Number(i)
+		modules[mt].children[i] = getDataJson(getModule(modules[mt].children[i].name))
+		$("#mss").css("width", "calc(66.66% - 80px)");
+		$("#mss").css("display", "block");
+		$('.l3').html("");
+		for (var is = 0; is < modules[mt].children[i].settings.length; is++) {
+			if (modules[mt].children[i].settings[is].isVisable()) {
+				if (modules[mt].children[i].settings[is].type == "SELECTBOX") {
+					var ops = '<option value="1">' + modules[mt].children[i].settings[is].Val + '</option>';
+					for (var aa = 0; aa < modules[mt].children[i].settings[is].acceptableValues.length; aa++) {
+						if (modules[mt].children[i].settings[is].Val != modules[mt].children[i].settings[is].acceptableValues[aa])
+							ops = ops + '<option value="' + (aa + 2) + '">' + modules[mt].children[i].settings[is].acceptableValues[aa] + '</option>';
+					}
+					$('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><select style="float: right;margin-right: 20px;display: inline-block;" class="mdui-select" onchange="mssChange(this.options[this.options.selectedIndex].text,' + mt + ',' + i + ',' + is + ')" mdui-select="{position: \'bottom\'}">' + ops + '</select></li>');
+				}
+				if (modules[mt].children[i].settings[is].type == "TEXTBOX") {
+					$('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].children[i].settings[is].Val + '" type="text"/></div></li>');
+				}
+				if (modules[mt].children[i].settings[is].type == "CHECKBOX") {
+					var isE = modules[mt].children[i].settings[is].Val ? 'checked' : "";
+					$('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-checkbox"><input type="checkbox" onclick="mssBChange(this,' + mt + ',' + i + ',' + is + ')" ' + isE + '/><i class="mdui-checkbox-icon"></i></label></li>');
+				}
+				if (modules[mt].children[i].settings[is].type == "SLIDER") {
+					$('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].children[i].settings[is].displayName + '</div><label class="mdui-slider mdui-slider-discrete"><input id="Int-' + mt + '-' + i + '-' + is + '" type="range" step="' + modules[mt].children[i].settings[is].increment + '" min="' + modules[mt].children[i].settings[is].minValue + '" max="' + modules[mt].children[i].settings[is].maxValue + '" onchange="mssIChange(this,' + mt + ',' + i + ',' + is + ')"/></label></li>');
+					$('#Int-' + mt + '-' + i + '-' + is)[0].value = modules[mt].children[i].settings[is].Val;
+				}
+				mdui.mutation();
+			}
+		}
+		$("#mss").css("opacity", "1");
+	}
+	document.oncontextmenu = function(e) {
+		return false;
+	}
+	if (openCategory != -1) {
+		clickModuleT(openCategory)
+		if (openModule != -1) {
+			clickModule(openCategory, openModule)
+		}
+	}
+</script>
 <!--务必保留本段版权信息，FDP原创设计UI! Be sure to keep the copyright information of this paragraph, FDP original design UI!-->
 </body>
 
